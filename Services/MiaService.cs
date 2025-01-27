@@ -3,6 +3,8 @@ using Grpc.Core;
 using Grpc.Net.Client;
 using MiaGRPC;
 using MiaManager.Models;
+using MiaManager.Services;
+using MiaManager.Views;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -127,6 +129,7 @@ namespace MiaManager
             {
                 var reply = await GetClient().ReadSvmsAsync(new MiaGRPC.SetSvmRequest());
                 return reply.Data.ToString();
+               
             }
             catch (Exception ex)
             {
@@ -140,8 +143,14 @@ namespace MiaManager
         {
             try
             {
-                SetSvmRequest request = new() { Id = svm.Id, Name = svm.Name };
-                foreach (string id in svm.Users.Select(u => u.Id).ToList())
+                SetSvmRequest request = new()
+                {
+                    Id = svm.Id,
+                    Name = svm.Name,
+                    CreateNegative = svm.CreateNegative,
+                    CreateUnknown = svm.CreateUnknown,
+                };
+                foreach (string id in svm.Users)
                     request.Users.Add(id);
 
                 var reply = await GetClient().CreateSvmAsync(request);
@@ -159,8 +168,13 @@ namespace MiaManager
         {
             try
             {
-                SetSvmRequest request = new() { Id = svm.Id, Name = svm.Name };
-                foreach (string id in svm.Users.Select(u => u.Id).ToList())
+                SetSvmRequest request = new() { 
+                    Id = svm.Id, 
+                    Name = svm.Name, 
+                    CreateNegative = svm.CreateNegative , 
+                    CreateUnknown = svm.CreateUnknown, 
+                };
+                foreach (string id in svm.Users)
                     request.Users.Add(id);
 
                 var reply = await GetClient().UpdateSvmAsync(request);
@@ -230,6 +244,8 @@ namespace MiaManager
                 MaxSendMessageSize = 100 * 1024 * 1024, // 100 MiB
                 MaxReceiveMessageSize = 100 * 1024 * 1024
             });
+
+
             var client = new MiaGRPC.MiaService.MiaServiceClient(channel);
 
             var request = new DataRequest() { UserId = id, Source = source };
@@ -239,12 +255,20 @@ namespace MiaManager
             using var call = client.ReadData(request);
             var cts = new CancellationTokenSource();
 
+            ProgressService.Instance.Stop = false;
+            ProgressService.Instance.Max = files.Count;
+            ProgressService.Instance.Steps = files.Count;
+            ProgressView progressView = new();
+            progressView.Show();
+
+
             try
             {
-                while (await call.ResponseStream.MoveNext(cts.Token))
+                while (await call.ResponseStream.MoveNext(cts.Token) && !ProgressService.Instance.Stop)
                 {
                     var response = call.ResponseStream.Current;
                     data.Add(response);
+                    ProgressService.Instance.Step(response.Id + "...");
                 }
             }
             catch (OperationCanceledException)
@@ -261,15 +285,31 @@ namespace MiaManager
 
         public async Task<bool> SetData(List<Data> data, string source, string userId)
         {
+            if (ProgressService.Instance.Stop)
+                return true;
+
+            ProgressService.Instance.Value = 0;
+            ProgressService.Instance.Max = data.Count;
+            ProgressService.Instance.Steps = data.Count;
+            ProgressView progressView = new();
+            progressView.Show();
 
             var call = GetClient().SetData();
 
             foreach (Data imageData in data)
             {
-                byte[] bytes = [.. imageData.Value];
-                var request = new SetDataRequest { Id = userId, Source = source, Name = imageData.Name, Reference = imageData.Id, ImageBytes = ByteString.CopyFrom(bytes) };
-                await call.RequestStream.WriteAsync(request);
-                await Task.Delay(500);
+                if (!ProgressService.Instance.Stop)
+                {
+                    byte[] bytes = [.. imageData.Value];
+                    var request = new SetDataRequest { Id = userId, Source = source, Name = imageData.Name, Reference = imageData.Id, ImageBytes = ByteString.CopyFrom(bytes) };
+                    await call.RequestStream.WriteAsync(request);
+                    await Task.Delay(500);
+
+                    ProgressService.Instance.Step(imageData.Name + "...");
+                }
+                else
+                    break;
+          
             }
 
             await call.RequestStream.CompleteAsync();

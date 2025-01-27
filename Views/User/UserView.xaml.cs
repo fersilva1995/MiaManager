@@ -46,5 +46,10 @@ namespace MiaManager.Views
         {
             DataListView.SelectedItems.Clear(); 
         }
+
+        private void selectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            DataListView.SelectAll();
+        }
     }
 }

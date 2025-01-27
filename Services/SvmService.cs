@@ -47,17 +47,20 @@ namespace MiaManager.Services
             {
                 selected = value;
                 if (value != null)
-                    SelectUserEvent?.Invoke(this, new SelectEventArg() { Id = value.Id, Name = value.Name });
+                    SelectEvent?.Invoke(this, new SelectEventArg() { Id = value.Id, Name = value.Name });
             }
         }
 
-        public EventHandler? SelectUserEvent { get; set; }
+        public EventHandler? SelectEvent { get; set; }
 
         public void SetSelected(string id)
         {
             var element = elements.Where(u => u.Id == id).FirstOrDefault();
             if (element != null)
+            {
                 Selected = element;
+                SelectEvent?.Invoke(this, new SelectEventArg() { Id = id, Name = element.Name });
+            }
         }
 
         public async Task<bool> Add(string name, List<string> users)
@@ -66,7 +69,7 @@ namespace MiaManager.Services
             {
                 Id = "",
                 Name = name,
-                Users = UserService.Instance.Users.Where(u => users.Contains(u.Id)).ToList(),
+                Users = users,
             };
 
             string response = await MiaService.Instance.AddSvm(svm);
@@ -107,5 +110,7 @@ namespace MiaManager.Services
                 Loaded = true;
             }
         }
+
+
     }
 }

@@ -48,11 +48,14 @@ namespace MiaManager.ViewModels
 
         public void Load()
         {
-            /*
-            while (!UserService.Instance.Loaded) { }
             Svms.Clear();
-            foreach (User user in UserService.Instance.Users)
-                Svms.Add(new(user));*/
+            while(!SvmService.Instance.Loaded) { }
+            foreach (Svm svm in SvmService.Instance.Elements)
+                Svms.Add(new()
+                {
+                    Id = svm.Id,
+                    Name = svm.Name,
+                });
         }
 
     }

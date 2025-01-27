@@ -58,7 +58,8 @@
                     <Button x:Name="Foward" Click="Foward_Click"></Button>
                     <Button x:Name="UserPage" Click="UserPage_Click">Usuários</Button>
                     <Button x:Name="SvmPage" Click="SvmPage_Click">Treinamento</Button>
-                    <Button x:Name="RecognitionPage" Click="RecognitionPage_Click" >Treinamento</Button>
+                    <Button x:Name="RecognitionPage" Click="RecognitionPage_Click" >Reconhecimento</Button>
+                    <Button x:Name="ReportPage" Click="ReportPage_Click" Content="Relatorios"/>
                 </StackPanel>
             </Border>
             <Border x:Name="Main" 

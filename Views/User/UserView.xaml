@@ -66,6 +66,10 @@
                         x:Name="clearButton"
                         Content="Limpar selecao" 
                         Margin="10" Click="clearButton_Click"/>
+                <Button Grid.Column="1" 
+                        x:Name="selectAllButton"
+                        Content="Selecionar todos" 
+                        Margin="10" Click="selectAllButton_Click"/>
 
             </StackPanel>
             <StackPanel Grid.Row="1" 

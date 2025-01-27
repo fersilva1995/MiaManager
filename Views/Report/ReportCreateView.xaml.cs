@@ -10,26 +10,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MiaManager.Views.Svm
+namespace MiaManager.Views
 {
     /// <summary>
-    /// Interação lógica para SvmsMenuView.xam
+    /// Lógica interna para ReportCreateView.xaml
     /// </summary>
-    public partial class SvmsMenuView : Page
+    public partial class ReportCreateView : Window
     {
-        public SvmsMenuView()
+        public ReportCreateView()
         {
             InitializeComponent();
-            SvmFrame.Navigate(new SvmView());
-        }
-
-        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            SvmCreateView createView = new();
-            createView.ShowDialog();
         }
     }
 }

@@ -28,7 +28,8 @@
 
 	<ItemGroup>
 	  <Folder Include="Behavior\" />
-	  <Folder Include="Commands\DataCommands\" />
+	  <Folder Include="Commands\ReportCommand\" />
+	  <Folder Include="Commands\UserCommands\DataCommands\" />
 	</ItemGroup>
 
 </Project>

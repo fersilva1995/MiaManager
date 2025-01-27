@@ -13,23 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MiaManager.Views.Svm
+namespace MiaManager.Views
 {
     /// <summary>
-    /// Interação lógica para SvmsMenuView.xam
+    /// Interação lógica para ReportMenuView.xam
     /// </summary>
-    public partial class SvmsMenuView : Page
+    public partial class ReportMenuView : Page
     {
-        public SvmsMenuView()
+        public ReportMenuView()
         {
             InitializeComponent();
-            SvmFrame.Navigate(new SvmView());
-        }
-
-        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            SvmCreateView createView = new();
-            createView.ShowDialog();
         }
     }
 }

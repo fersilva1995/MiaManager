@@ -14,14 +14,20 @@ namespace MiaManager
         UsersMenuView UsersMenuView { get; set; }
         SvmsMenuView SvmsMenuView { get; set; }
         RecognitionMenuView RecognitionMenuView { get; set; }
+        ReportMenuView ReportMenuView { get; set; }
 
         public Mia()
         {
             InitializeComponent();
+
             UserService.Instance.Start();
             SvmService.Instance.Start();
+            ReportService.Instance.Start();
+
+
             UsersMenuView = new();
             SvmsMenuView = new();
+            ReportMenuView = new();
             RecognitionMenuView = new();
             MainFrame.Navigate(UsersMenuView);
 
@@ -40,6 +46,12 @@ namespace MiaManager
         private void RecognitionPage_Click(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(RecognitionMenuView);
+        }
+
+
+        private void ReportPage_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(ReportMenuView);
         }
 
 

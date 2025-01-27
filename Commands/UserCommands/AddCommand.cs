@@ -2,6 +2,7 @@
 using MiaManager.Models;
 using MiaManager.Services;
 using MiaManager.ViewModels;
+using MiaManager.Views;
 using Microsoft.Win32;
 using System.Security.Policy;
 using System.Windows;
@@ -36,13 +37,29 @@ namespace MiaManager.Commands
                 {
                     try
                     {
+                      
                         string[] selectedFiles = openFileDialog.FileNames;
+                        ProgressService.Instance.Stop = false;
+                        ProgressService.Instance.Max = selectedFiles.Length;
+                        ProgressService.Instance.Steps = selectedFiles.Length;
+                        ProgressView progressView = new();
+                        progressView.Show();
+
+
                         foreach (string file in selectedFiles)
                         {
-                            string fileName = file;
-                            byte[] imageBytes = System.IO.File.ReadAllBytes(fileName);
-                            string name = fileName.Split("\\").Last().Split(".").First();
-                            data.Add(new Data { Name = name, Value = [.. imageBytes] });
+                            if (!ProgressService.Instance.Stop)
+                            {
+                                string fileName = file;
+                                byte[] imageBytes = System.IO.File.ReadAllBytes(fileName);
+                                string name = fileName.Split("\\").Last().Split(".").First();
+                                data.Add(new Data { Name = name, Value = [.. imageBytes] });
+
+                                ProgressService.Instance.Step(file);
+                            }
+                            else
+                                break;
+                          
                         }
         
                     }
@@ -55,10 +72,11 @@ namespace MiaManager.Commands
             }
             else
             {
+                ProgressService.Instance.Stop = false;
                 data = DataService.Instance.Selected;
             }
 
-            if(await DataService.Instance.Set(data, type))
+            if (await DataService.Instance.Set(data, type))
                 ViewModel.LoadData(type);
 
            /* if (await DataService.Instance.Set(type, name, reference, imageBytes))
