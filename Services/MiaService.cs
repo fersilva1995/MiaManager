@@ -8,6 +8,7 @@ using MiaManager.Views;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -332,6 +333,9 @@ namespace MiaManager
             return false;
         }
 
+
+        #endregion
+
         public async Task<List<RecognitionResponse>> Recognize(List<Data> data)
         {
             try
@@ -381,6 +385,87 @@ namespace MiaManager
             }
         }
 
-        #endregion
+        public async Task<List<RecognitionResponse>> RecognizeSingle(List<Data> data, Svm svm)
+        {
+            try
+            {
+                ProgressService.Instance.Stop = false;
+                ProgressService.Instance.Max = data.Count*2;
+                ProgressService.Instance.Steps = data.Count*2;
+                ProgressView progressView = new();
+                progressView.Show();
+
+                List<RecognitionResponse> responses = [];
+                var client = GetClient();
+                List<string> res = [];
+
+                var call = client.RecognizeSingle();
+                bool completeSend = false;
+                // Sending messages to the server
+                var sendTask = Task.Run(async () =>
+                {
+                    foreach (var message in data)
+                    {
+                        byte[] bytes = [.. message.Value];
+                        RecognizeSingleRequest request = new() { Image = ByteString.CopyFrom(bytes), SvmId = svm.Id, ImageName = message.Name };
+                        await call.RequestStream.WriteAsync(request);
+                        await Task.Delay(100);
+                        ProgressService.Instance.Step(message.Name + " Enviado");
+
+                        if (ProgressService.Instance.Stop)
+                            break;
+                    }
+
+                    completeSend = true;
+                    await call.RequestStream.CompleteAsync();
+                });
+
+
+                List<RecognitionResponse> localResponses = [];
+                Task.Run(async () =>
+                {
+                    while (completeSend == false)
+                    {
+                        await foreach (var response in call.ResponseStream.ReadAllAsync())
+                            localResponses.Add(response);
+
+                        Thread.Sleep(100);
+                    }
+                });
+
+                // Receiving messages from the server
+                var receiveTask = Task.Run(async () =>
+                {
+                    while (completeSend == false)
+                    {
+                        for(int counter = 0; counter < localResponses.Count; counter++)
+                        {
+                            responses.Add(localResponses[counter]);
+                            if(!res.Contains(localResponses[counter].ImageName))
+                            {
+                                res.Add(localResponses[counter].ImageName);
+                                ProgressService.Instance.Step(localResponses[counter].ImageName + " Lido");
+                            }
+                        }
+
+                        localResponses.Clear();
+
+                        Thread.Sleep(1000);
+                    }
+
+                });
+
+         
+
+                await Task.WhenAll(sendTask, receiveTask);
+                ProgressService.Instance.Stop = true;
+                return responses;
+            }
+            catch (Exception e)
+            {
+                return new();
+            }
+        }
+
     }
 }

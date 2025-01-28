@@ -1,30 +1,21 @@
 ﻿using MiaManager.Base;
 using MiaManager.Models;
 using System.Text.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using System.Security.Cryptography;
-using MiaManager.ViewModels;
-using Google.Protobuf.WellKnownTypes;
-using MiaManager.EventsArgs;
 
 namespace MiaManager.Services
 {
-    public class ReportService : BaseService
+    public class ReportResultService : BaseService
     {
         #region SINGLETON
 
-        private ReportService()
+        private ReportResultService()
         {
 
         }
 
-        private static ReportService? instance = null;
-        public static ReportService Instance
+        private static ReportResultService? instance = null;
+        public static ReportResultService Instance
         {
             get
             {
@@ -33,15 +24,15 @@ namespace MiaManager.Services
             }
         }
 
-        public Report Selected { get; set; } = new();
 
-        public EventHandler? SelectEvent { get; set; }
 
         #endregion
         private static readonly object fileLock = new object();
-        readonly string filePath = "reports.json";
+        readonly string filePath = "reportsResults.json";
 
-        public List<Report> Reports = [];
+        public List<ReportResult> Reports = [];
+        public ReportResult Selected { get; set; } = new();
+
 
         public override void Run()
         {
@@ -51,13 +42,13 @@ namespace MiaManager.Services
                 {
                     if (System.IO.File.Exists(filePath))
                     {
-                        List<Report>? reports = [];
+                        List<ReportResult>? reports = [];
                         lock (fileLock)
                         {
 
                             string jsonContent = System.IO.File.ReadAllText(filePath);
                             if (!string.IsNullOrEmpty(jsonContent))
-                                reports = JsonSerializer.Deserialize<List<Report>>(jsonContent);
+                                reports = JsonSerializer.Deserialize<List<ReportResult>>(jsonContent);
                         }
 
                         if (reports != null)
@@ -68,8 +59,11 @@ namespace MiaManager.Services
                             foreach (long key in removed)
                                 Reports.RemoveAll(u => u.Id == key);
 
-                            foreach (Report element in reports.Where(u => added.Contains(u.Id)))
+                            foreach (ReportResult element in reports.Where(u => added.Contains(u.Id)))
+                            { 
                                 Reports.Add(element);
+                                element.Load();
+                            }
                         }
                     }
                     else
@@ -86,11 +80,11 @@ namespace MiaManager.Services
             }
         }
 
-        public void Update(Report report)
+        public void Update(ReportResult report)
         {
             lock (fileLock)
             {
-                Report? r = Reports.Where(r => r.Id ==  report.Id).FirstOrDefault();
+                ReportResult? r = Reports.Where(r => r.Id == report.Id).FirstOrDefault();
                 if (r != null)
                 {
                     int index = Reports.IndexOf(r);
@@ -100,7 +94,7 @@ namespace MiaManager.Services
             }
         }
 
-        public void Add(Report report)
+        public void Add(ReportResult report)
         {
             lock (fileLock)
             {
@@ -116,31 +110,29 @@ namespace MiaManager.Services
             }
         }
 
-        public void RemoveReport(Report report)
+        public void RemoveReport(long id)
         {
             lock (fileLock)
             {
-                Reports.RemoveAll(r => report.Id == r.Id);
+                Reports.RemoveAll(r => id == r.Id);
                 WriteReports();
             }
         }
 
-        public void SetSelected(ReportViewModel report)
-        {
-            if(report == null) 
-                return;
-            Report? selected = Reports.Where(r => r.Id == report.Id).FirstOrDefault();
-            if(selected != null)
-            {
-                Selected = selected;
-                SelectEvent?.Invoke(this, new SelectEventArg() { Id = selected.Id, Name = selected.Name });
-            }
-        }
 
-        private  void WriteReports()
+        private void WriteReports()
         {
             string jsonContent = JsonSerializer.Serialize(Reports, new JsonSerializerOptions { WriteIndented = true });
             System.IO.File.WriteAllText(filePath, jsonContent);
+        }
+
+        internal void SetSelected(long id)
+        {
+            ReportResult? report = Reports.FirstOrDefault(r => id == r.Id);
+            if (report != null)
+            {
+                Selected = report;
+            }
         }
     }
 }

@@ -104,7 +104,7 @@ namespace MiaManager.ViewModels
         {
             Users.Clear();  
             SelectEventArg arg = (SelectEventArg)e;
-            Svm? svm = SvmService.Instance.Elements.Where(d => d.Id ==  arg.Id).FirstOrDefault();    
+            Svm? svm = SvmService.Instance.Elements.Where(d => d.Id ==  arg.Id.ToString()).FirstOrDefault();    
             if (svm != null)
             {
                 Id = svm.Id;

@@ -5,10 +5,142 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MiaManager.Views"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:vm="clr-namespace:MiaManager.ViewModels"
       Title="ReportView">
+    <Page.DataContext>
+        <vm:ReportViewModel/>
+    </Page.DataContext>
+    <Grid x:Name="Main">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid x:Name="Header" 
+              Grid.Row="0"
+              Margin="20 10 20 10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="{Binding Id}"
+                           FontSize="20"/>
+                <TextBox Text="{Binding Name}"
+                         FontSize="20"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1"
+                        Margin="0 0 20 0">
+                <TextBlock Text="Modelo"
+                           FontSize="20"/>
+                <ComboBox ItemsSource="{Binding Svms}" 
+                          SelectedItem="{Binding SelectedSvm, Mode=TwoWay}" 
+                          DisplayMemberPath="Name"/>
 
-    <Grid>
-        
+            </StackPanel>
+            
+            <Button Grid.Column="2"
+                    Content="Salvar"
+                    Margin="10 0 10 0"
+                    Background="ForestGreen"
+                    BorderBrush="ForestGreen"
+                    Command="{Binding UpdateSvmCommand}"/>
+            <Button Grid.Column="3"
+                    Margin="10 0 10 0"
+                    Content="Executar"
+                    Background="DarkOrange"
+                    BorderBrush="DarkOrange"
+                    Command="{Binding ExecuteReportCommand}"/>
+        </Grid>
+        <Grid x:Name="Body" Grid.Row="1" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <DataGrid Grid.Row="0"
+                      x:Name="DataGridExample" 
+                      AutoGenerateColumns="False" 
+                      CanUserAddRows="False" 
+                      ItemsSource="{Binding Targets}">
+                <DataGrid.Columns>
+
+                    <!-- Select Column -->
+                    <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn.Header>
+                            <CheckBox Content="Select All" IsChecked="{Binding SelectAll, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSelected}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*" />
+
+                    <!-- Name Column -->
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+
+                    <!-- Current Feature Count Column -->
+                    <DataGridTextColumn Header="Feature Count" Binding="{Binding CurrentFeatureCount}" Width="*" />
+                    <!-- Current Feature Count Column -->
+                    <DataGridTextColumn Header="Image Count" Binding="{Binding FileCount}" Width="*" />
+
+                    <!-- Action Button Column -->
+                    <DataGridTemplateColumn Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Arquivos"
+                                        Command="{Binding LoadInputFilesCommand}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock Text="Resultados"
+                       Grid.Row="1"
+                       VerticalAlignment="Center"
+                       FontSize="20"/>
+            <DataGrid Grid.Row="2"
+                      x:Name="DataGridResults" 
+                      AutoGenerateColumns="False" 
+                      CanUserAddRows="False" 
+                      ItemsSource="{Binding Reports}">
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" />
+                    <DataGridTextColumn Header="Nome" Binding="{Binding Name}" Width="*" />
+                    <DataGridTextColumn Header="Precisão (%)" Binding="{Binding Precision}" Width="*" />
+                    <DataGridTextColumn Header="Recall (%)" Binding="{Binding Recall}" Width="*" />
+                    <DataGridTextColumn Header="F1 (%)" Binding="{Binding F1}" Width="*" />
+
+         
+                    <DataGridTemplateColumn  Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Remover" 
+                                        Background="Crimson"
+                                        BorderBrush="Crimson"
+                                        Command="{Binding RemoveReportResult}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Mostrar" Command="{Binding ShowReportResult}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
     </Grid>
+
 </Page>

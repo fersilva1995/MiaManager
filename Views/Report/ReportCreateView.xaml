@@ -4,9 +4,77 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MiaManager.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:vm="clr-namespace:MiaManager.ViewModels"
         mc:Ignorable="d"
-        Title="ReportCreateView" Height="450" Width="800">
+        Title="ReportCreateView" 
+        Height="600" 
+        Width="1000"
+        WindowStyle="None"
+        WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <vm:ReportViewModel/>
+    </Window.DataContext>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="60"/>
+        </Grid.RowDefinitions>
+        <TextBlock></TextBlock>
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="Nome"/>
+            <TextBox Text="{Binding Name, Mode=TwoWay}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2">
+            <TextBlock Text="Modelo"/>
+            <ComboBox ItemsSource="{Binding Svms}" SelectedItem="{Binding SelectedSvm, Mode=TwoWay}" DisplayMemberPath="Name"/>
+        </StackPanel>
+        <DataGrid Grid.Row="3"
+                  x:Name="DataGridExample" 
+                  AutoGenerateColumns="False" 
+                  CanUserAddRows="False" 
+                  ItemsSource="{Binding Targets}">
+            <DataGrid.Columns>
+
+                <!-- Select Column -->
+                <DataGridTemplateColumn Width="Auto">
+                    <DataGridTemplateColumn.Header>
+                        <CheckBox Content="Select All" IsChecked="{Binding SelectAll, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=Window}}" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsSelected}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="Auto" />
+
+                <!-- Name Column -->
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
+
+                <!-- Current Feature Count Column -->
+                <DataGridTextColumn Header="Feature Count" Binding="{Binding CurrentFeatureCount}" Width="*" />
+                <!-- Current Feature Count Column -->
+                <DataGridTextColumn Header="Image Count" Binding="{Binding FileCount}" Width="*" />
+
+                <!-- Action Button Column -->
+                <DataGridTemplateColumn Header="Action" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Action" Command="{Binding LoadInputFilesCommand}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Grid.Row="4"
+                Width="120"
+                Content="Salvar"
+                Command="{Binding AddReportCommand}"/>
     </Grid>
 </Window>

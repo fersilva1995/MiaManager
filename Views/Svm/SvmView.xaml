@@ -55,7 +55,7 @@
                     <DataGridCheckBoxColumn Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}">
                         <DataGridCheckBoxColumn.Header>
                             <Border Background="Transparent">
-                                <CheckBox IsChecked="{Binding DataContext.IsAllSelected, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                <CheckBox IsChecked="{Binding SelectAll, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                             </Border>
                         </DataGridCheckBoxColumn.Header>
                         <DataGridCheckBoxColumn.HeaderStyle>

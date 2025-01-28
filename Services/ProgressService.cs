@@ -41,6 +41,8 @@ namespace MiaManager.Services
             {
                 stop = value;
                 Value = stop ? Max : 0;
+                StepEvent?.Invoke(this, new EventArgs());
+
             }
         }
 

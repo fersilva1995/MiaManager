@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MiaManager.Views.Svm;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,13 @@ namespace MiaManager.Views
         public ReportMenuView()
         {
             InitializeComponent();
+            ReportFrame.Navigate(new ReportView());
+        }
+
+        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ReportCreateView createView = new();
+            createView.ShowDialog();
         }
     }
 }

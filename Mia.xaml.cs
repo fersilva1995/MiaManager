@@ -23,6 +23,7 @@ namespace MiaManager
             UserService.Instance.Start();
             SvmService.Instance.Start();
             ReportService.Instance.Start();
+            ReportResultService.Instance.Start();
 
 
             UsersMenuView = new();

@@ -101,7 +101,7 @@ namespace MiaManager.ViewModels
         {
             SelectEventArg arg = (SelectEventArg)e;
             Name = arg.Name;
-            Id = arg.Id;
+            Id = arg.Id.ToString();
         }
 
 

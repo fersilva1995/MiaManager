@@ -20,6 +20,8 @@
 		<PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
 		<PackageReference Include="MaterialDesignThemes.MahApps" Version="3.1.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="ScottPlot" Version="5.0.54" />
+		<PackageReference Include="ScottPlot.WPF" Version="5.0.54" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -28,7 +30,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Behavior\" />
-	  <Folder Include="Commands\ReportCommand\" />
 	  <Folder Include="Commands\UserCommands\DataCommands\" />
 	</ItemGroup>
 
