@@ -19,7 +19,7 @@ namespace MiaManager.ViewModels
         }
 
 
-        public ObservableCollection<ReportViewModel> Reports { get; set; } = [];
+        public ObservableCollection<ReportItemViewModel> Reports { get; set; } = [];
 
         public RefreshReportsCommand RefreshReportsCommand { get; set; }
 
@@ -29,8 +29,8 @@ namespace MiaManager.ViewModels
             Load();
         }
 
-        private ReportViewModel selected = new();
-        public ReportViewModel Selected
+        private ReportItemViewModel selected = new();
+        public ReportItemViewModel Selected
         {
             get
             {
@@ -38,9 +38,14 @@ namespace MiaManager.ViewModels
             }
             set
             {
-                selected = value;
-                OnPropertyChanged(nameof(Selected));
-                ReportService.Instance.SetSelected(value);
+     
+                if(value != null)
+                {
+                    selected = value;
+                    OnPropertyChanged(nameof(Selected));
+                    ReportService.Instance.SetSelected(value.Id);
+                }
+
             }
         }
 

@@ -125,11 +125,10 @@ namespace MiaManager.Services
             }
         }
 
-        public void SetSelected(ReportViewModel report)
+        public void SetSelected(long reportId)
         {
-            if(report == null) 
-                return;
-            Report? selected = Reports.Where(r => r.Id == report.Id).FirstOrDefault();
+
+            Report? selected = Reports.Where(r => r.Id == reportId).FirstOrDefault();
             if(selected != null)
             {
                 Selected = selected;

@@ -70,6 +70,19 @@ namespace MiaManager.ViewModels
             }
         }
 
+
+        private double threshold = 0;
+        public double Threshold
+        {
+            get { return threshold; }
+            set
+            {
+                threshold = value;
+                OnPropertyChanged(nameof(Threshold));
+            }
+        }
+
+
         public RemoveReportResult RemoveReportResult { get; set; }
         public ShowReportResult ShowReportResult { get; set; }
 

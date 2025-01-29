@@ -107,6 +107,7 @@ message RecognizeSingleRequest {
 	bytes image = 1;
 	string svm_id = 2;
 	string image_name = 3;
+	double threshold = 4;
 }
 
 

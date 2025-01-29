@@ -20,11 +20,12 @@ namespace MiaManager.Commands.ReportCommand
             {
                 Name = ViewModel.Name,
                 Svm = SvmService.Instance.Elements.Where(e => e.Id == ViewModel.SelectedSvm.Id).First(),
+                Threshold = ViewModel.Threshold,
                 Targets = ViewModel.Targets.Select(t => new Target()
                 {
                     Id = t.Id,
                     Name = t.Name,
-                    CurrentFeatureCount = t.CurrentFeatureCount,
+                    CurrentFeatureNumber = t.CurrentFeatureNumber,
                     InputFiles = t.InputFiles.ToList(),
                 }).ToList()
             };

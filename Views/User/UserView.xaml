@@ -93,6 +93,8 @@
                         Command="{Binding AddCommand}"
                         CommandParameter="face_features" 
                         Margin="10"/>
+                <TextBlock Text="{Binding ElementName=DataListView, Path=Items.Count, StringFormat='Total Rows: {0}'}" 
+                   FontSize="16" FontWeight="Bold" Margin="0,10,0,0"/>
             </StackPanel>
             <ListView Grid.Row="2" 
                       Grid.ColumnSpan="2" 

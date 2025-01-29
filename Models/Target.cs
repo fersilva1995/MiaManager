@@ -10,7 +10,7 @@ namespace MiaManager.Models
     {
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-        public int CurrentFeatureCount { get; set; } = 0;
+        public int CurrentFeatureNumber { get; set; } = 0;
         public List<string> InputFiles { get; set; } = [];
         public List<string> OutputFiles { get; set; } = [];
     }

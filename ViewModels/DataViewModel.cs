@@ -77,6 +77,8 @@ namespace MiaManager.ViewModels
         public LoadDataCommand LoadDataCommand {  get; set; }
         public RemoveDataCommand RemoveDataCommand { get; set; }
 
+        public EventHandler? DataEvent { get; set; }
+
         public DataViewModel()
         {
             LoadDataCommand = new(this);

@@ -22,6 +22,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
                 <TextBlock Text="{Binding Id}"
@@ -38,8 +39,18 @@
                           FontSize="20"/>
             </StackPanel>
             <Button Grid.Column="2"
-                    Content="Salvar"
-                    Command="{Binding UpdateSvmCommand}"/>
+                Content="Salvar"
+                Margin="10 0 10 0"
+                Background="ForestGreen"
+                BorderBrush="ForestGreen"
+                Command="{Binding UpdateSvmCommand}"/>
+            <Button Grid.Column="3"
+                Margin="10 0 10 0"
+                Content="Executar"
+                Background="DarkOrange"
+                BorderBrush="DarkOrange"
+                Command="{Binding ExecuteSvmCommand}"/>
+
         </Grid>
         <Grid x:Name="Body" Grid.Row="1" >
             <Grid.RowDefinitions>

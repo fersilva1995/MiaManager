@@ -25,7 +25,8 @@ namespace MiaManager.Commands.ReportCommand
             {
                 ReportId = ViewModel.Id,
                 Name = ViewModel.Name,
-                Users = UserService.Instance.Users.Where(u => ViewModel.Targets.Select(t => t.Id).Contains(u.Id)).ToList(),
+                Users = ViewModel.Targets.ToDictionary(t => t.Id, t => t.CurrentFeatureNumber),
+                Threshold = ViewModel.Threshold,
                 Svms = [svm],
             };
 
@@ -43,7 +44,7 @@ namespace MiaManager.Commands.ReportCommand
                     data.Add(new Data { Name = file, Value = [.. imageBytes] });
                 }
 
-                List<RecognitionResponse> response = await MiaService.Instance.RecognizeSingle(data, svm);
+                List<RecognitionResponse> response = await MiaService.Instance.RecognizeSingle(data, svm, ViewModel.Threshold);
                 foreach (RecognitionResponse res in response)
                 {
                     if (reportResult.OutputParameters.TryGetValue(res.ImageName, out List<string>? value))

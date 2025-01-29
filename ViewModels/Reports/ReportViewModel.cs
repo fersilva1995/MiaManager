@@ -31,6 +31,18 @@ namespace MiaManager.ViewModels
             }
         }
 
+        private double threshold = 0;
+        public double Threshold
+        {
+            get { return threshold; }
+            set
+            {
+                threshold = value;
+                OnPropertyChanged(nameof(Threshold));
+            }
+        }
+
+
         private SvmItemViewModel selectedSvm = new();
         public SvmItemViewModel SelectedSvm
         {
@@ -42,22 +54,6 @@ namespace MiaManager.ViewModels
             }
         }
 
-        private bool selectAll = false;
-        public bool SelectAll
-        {
-            get => selectAll;
-            set
-            {
-                if (selectAll != value)
-                {
-                    selectAll = value;
-                    OnPropertyChanged(nameof(SelectAll));
-
-                    foreach (var item in Targets)
-                        item.IsSelected = selectAll;
-                }
-            }
-        }
 
         public ObservableCollection<SvmItemViewModel> Svms { get; set; } = [];
         public ObservableCollection<TargetViewModel> Targets { get; set; } = [];
@@ -67,6 +63,7 @@ namespace MiaManager.ViewModels
 
         public AddReportCommand AddReportCommand { get; set; }
         public ExecuteReportCommand ExecuteReportCommand { get; set; }
+        public UpdateReportCommand UpdateReportCommand { get; set; }
 
         public ReportViewModel()
         {
@@ -75,38 +72,50 @@ namespace MiaManager.ViewModels
 
             AddReportCommand = new(this);
             ExecuteReportCommand = new(this);
+            UpdateReportCommand = new(this);
             ReportService.Instance.SelectEvent += Select;
         }
 
         private void Select(object? sender, EventArgs e)
         {
-            Targets.Clear();   
-
             SelectEventArg arg = (SelectEventArg)e;
             Report? report = ReportService.Instance.Reports.Where(d => d.Id == Convert.ToInt64(arg.Id)).FirstOrDefault();
             if (report != null)
             {
                 Id = report.Id;
                 Name = report.Name;
+                Threshold = report.Threshold;
                 if (report.Svm != null)
                     SelectedSvm = Svms.Where(s => s.Id == report.Svm.Id).First();
 
                 foreach (Target target in report.Targets)
                 {
-                    TargetViewModel t = new()
+
+                    TargetViewModel? t = Targets.Where(t => t.Id == target.Id).FirstOrDefault();
+                    if(t != null)
                     {
-                        Id = target.Id,
-                        Name = target.Name,
-                        CurrentFeatureCount = target.CurrentFeatureCount,
-                        FileCount = target.InputFiles.Count,
-                    };
-                    foreach (var file in target.InputFiles)
-                        t.InputFiles.Add(file);
+                        t.InputFiles.Clear();
+                        t.OutputFiles.Clear();
 
-                    foreach(var file in target.OutputFiles)
-                        t.OutputFiles.Add(file);
+                        t.CurrentFeatureNumber = target.CurrentFeatureNumber;
+                        t.FileCount = target.InputFiles.Count;
+                        foreach (var file in target.InputFiles)
+                            t.InputFiles.Add(file);
 
-                    Targets.Add(t);
+                        foreach (var file in target.OutputFiles)
+                            t.OutputFiles.Add(file);
+                    }
+                }
+
+                foreach(TargetViewModel t in Targets)
+                {
+                    if(!report.Targets.Select(t => t.Id).Contains(t.Id))
+                    {
+                        t.CurrentFeatureNumber = 0;
+                        t.FileCount = 0;
+                        t.InputFiles.Clear();
+                        t.OutputFiles.Clear();
+                    }
                 }
 
                 Reports.Clear();
@@ -114,25 +123,21 @@ namespace MiaManager.ViewModels
 
                 foreach (ReportResult result in results)
                 {
+                    result.Load();
                     Reports.Add(new()
                     {
                         Id = result.Id,
                         Name = result.Name,
-                        Precision = Math.Round(result.Precision*100,2),
+                        Precision = Math.Round(result.Precision * 100, 2),
                         Recall = Math.Round(result.Recall * 100, 2),
-                        F1 = Math.Round(result.Precision * 100, 2),
+                        F1 = Math.Round(result.F1Score * 100, 2),
+                        Threshold = result.Threshold,
+                        
                     });
                 }
 
 
             }
-
-        
-
-
-
-
-
         }
         public void LoadSvm()
         {
@@ -151,20 +156,10 @@ namespace MiaManager.ViewModels
                 {
                     Id = user.Id,
                     Name = user.Name,
-                    CurrentFeatureCount = user.Features.Count(),
+                    CurrentFeatureNumber = user.Features.Count(),
                 });
-
-            foreach (TargetViewModel target in Targets)
-                target.PropertyChanged += Target_PropertyChanged;
         }
 
-        private void Target_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(TargetViewModel.IsSelected))
-            {
-                selectAll = Targets.All(item => item.IsSelected);
-                OnPropertyChanged(nameof(SelectAll));
-            }
-        }
+
     }
 }

@@ -11,7 +11,7 @@ namespace MiaManager.ViewModels
 {
     public class TargetViewModel : BaseViewModel
     {
-        public int CurrentFeatureCount { get; set; } = 0;
+      
 
         private string id = string.Empty;
         public string Id
@@ -49,19 +49,7 @@ namespace MiaManager.ViewModels
             }
         }
 
-        public bool isSelected = false;
-        public bool IsSelected
-        {
-            get
-            {
-                return isSelected;
-            }
-            set
-            {
-                isSelected = value;
-                OnPropertyChanged(nameof(IsSelected));
-            }
-        }
+ 
 
         public int fileCount = 0;
         public int FileCount
@@ -91,7 +79,7 @@ namespace MiaManager.ViewModels
 
         public void LoadInputFiles()
         {
-            //InputFiles.Clear();
+            InputFiles.Clear();
 
             OpenFileDialog openFileDialog = new()
             {

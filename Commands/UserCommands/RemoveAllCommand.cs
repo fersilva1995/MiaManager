@@ -17,14 +17,17 @@ namespace MiaManager.Commands
         {
             if (DataService.Instance.Selected.Count <= 0)
                 return;
-
+           
             List<string> ids = DataService.Instance.Selected.Select(d => d.Id).ToList();
             Dictionary<string, DataViewModel> list = [];
             foreach (DataViewModel viewModel in ViewModel.Data)
                 if (ids.Contains(viewModel.Id))
                     list.Add(viewModel.Id, viewModel);
 
+            string type = list.First().Value.Type;
             await DataService.Instance.Remove(DataService.Instance.Selected.Select(d => d.Id).ToList(), list.First().Value.Type);
+
+            ViewModel.LoadData(type);
         }
     }
 }

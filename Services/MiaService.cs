@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -204,11 +205,11 @@ namespace MiaManager
             }
         }
 
-        public async Task<string> TrainSvm(Svm svm)
+        public async Task<string> TrainSvm(string svmId)
         {
             try
             {
-                var reply = await GetClient().TrainSvmAsync(new MiaGRPC.SetSvmRequest { Id = svm.Id });
+                var reply = await GetClient().TrainSvmAsync(new MiaGRPC.SetSvmRequest { Id = svmId });
                 return reply.Response.ToString();
             }
             catch (Exception ex)
@@ -385,7 +386,7 @@ namespace MiaManager
             }
         }
 
-        public async Task<List<RecognitionResponse>> RecognizeSingle(List<Data> data, Svm svm)
+        public async Task<List<RecognitionResponse>> RecognizeSingle(List<Data> data, Svm svm, double threshold)
         {
             try
             {
@@ -407,7 +408,7 @@ namespace MiaManager
                     foreach (var message in data)
                     {
                         byte[] bytes = [.. message.Value];
-                        RecognizeSingleRequest request = new() { Image = ByteString.CopyFrom(bytes), SvmId = svm.Id, ImageName = message.Name };
+                        RecognizeSingleRequest request = new() { Image = ByteString.CopyFrom(bytes), SvmId = svm.Id, ImageName = message.Name, Threshold = threshold };
                         await call.RequestStream.WriteAsync(request);
                         await Task.Delay(100);
                         ProgressService.Instance.Step(message.Name + " Enviado");
@@ -421,34 +422,27 @@ namespace MiaManager
                 });
 
 
-                List<RecognitionResponse> localResponses = [];
-                Task.Run(async () =>
-                {
-                    while (completeSend == false)
-                    {
-                        await foreach (var response in call.ResponseStream.ReadAllAsync())
-                            localResponses.Add(response);
 
-                        Thread.Sleep(100);
-                    }
-                });
-
+                bool thereIsData = true;
                 // Receiving messages from the server
                 var receiveTask = Task.Run(async () =>
                 {
-                    while (completeSend == false)
+                    while (thereIsData || !completeSend)
                     {
-                        for(int counter = 0; counter < localResponses.Count; counter++)
+                        thereIsData = false;
+                        await foreach (var response in call.ResponseStream.ReadAllAsync())
                         {
-                            responses.Add(localResponses[counter]);
-                            if(!res.Contains(localResponses[counter].ImageName))
+                            thereIsData = true;
+                            responses.Add(response);
+                            if (!res.Contains(response.ImageName))
                             {
-                                res.Add(localResponses[counter].ImageName);
-                                ProgressService.Instance.Step(localResponses[counter].ImageName + " Lido");
+                                res.Add(response.ImageName);
+                                ProgressService.Instance.Step(response.ImageName + " Lido");
                             }
                         }
 
-                        localResponses.Clear();
+                        
+
 
                         Thread.Sleep(1000);
                     }
@@ -458,6 +452,7 @@ namespace MiaManager
          
 
                 await Task.WhenAll(sendTask, receiveTask);
+                Thread.Sleep(5000);
                 ProgressService.Instance.Stop = true;
                 return responses;
             }

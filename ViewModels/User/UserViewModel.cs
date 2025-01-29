@@ -1,4 +1,5 @@
-﻿using MiaGRPC;
+﻿using MahApps.Metro.Behaviors;
+using MiaGRPC;
 using MiaManager.Commands;
 using MiaManager.EventsArgs;
 using MiaManager.Services;
@@ -83,6 +84,8 @@ namespace MiaManager.ViewModels
 
         }
 
+
+
         public async void LoadData(string type)
         {
             List<ImageData> data = await DataService.Instance.GetList(type);
@@ -95,6 +98,17 @@ namespace MiaManager.ViewModels
                     Name = imageData.Name,
                     Type = type,
                 });
+
+            foreach (DataViewModel dataViewModel in Data)
+                dataViewModel.DataEvent += DataEvent;
+        }
+
+        private void DataEvent(object? sender, EventArgs e)
+        {
+            SelectEventArg selectEventArg = (SelectEventArg)e;
+            DataViewModel? data = Data.Where(d => d.Id == selectEventArg.Id.ToString()).FirstOrDefault();
+            if (data != null) 
+                Data.Remove(data);  
         }
 
         private void SelectUser(object? sender, EventArgs e)

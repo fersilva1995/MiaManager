@@ -90,13 +90,15 @@ namespace MiaManager.ViewModels
 
 
         public AddSvmCommand AddSvmCommand { get; set; }
-        public UpdateSvmCommand UpdateSvmCommand { get; set; }  
+        public UpdateSvmCommand UpdateSvmCommand { get; set; } 
+        public ExecuteSvmCommand ExecuteSvmCommand { get; set; }
 
 
         public SvmViewModel()
         {
             AddSvmCommand = new(this);
             UpdateSvmCommand = new(this);
+            ExecuteSvmCommand = new(this);
             SvmService.Instance.SelectEvent += Select;
         }
 

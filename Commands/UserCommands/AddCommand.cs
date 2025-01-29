@@ -37,7 +37,7 @@ namespace MiaManager.Commands
                 {
                     try
                     {
-                      
+
                         string[] selectedFiles = openFileDialog.FileNames;
                         ProgressService.Instance.Stop = false;
                         ProgressService.Instance.Max = selectedFiles.Length;
@@ -59,9 +59,9 @@ namespace MiaManager.Commands
                             }
                             else
                                 break;
-                          
+
                         }
-        
+
                     }
                     catch (Exception ex)
                     {
@@ -76,11 +76,11 @@ namespace MiaManager.Commands
                 data = DataService.Instance.Selected;
             }
 
-            if (await DataService.Instance.Set(data, type))
-                ViewModel.LoadData(type);
+            await DataService.Instance.Set(data, type);
+            ViewModel.LoadData(type);
 
-           /* if (await DataService.Instance.Set(type, name, reference, imageBytes))
-                ViewModel.LoadData(type);*/
+            /* if (await DataService.Instance.Set(type, name, reference, imageBytes))
+                 ViewModel.LoadData(type);*/
         }
     }
 }
