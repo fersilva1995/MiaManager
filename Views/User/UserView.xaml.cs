@@ -1,8 +1,10 @@
 ﻿using MiaManager.Services;
 using MiaManager.ViewModels;
+using ScottPlot.Colormaps;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +52,35 @@ namespace MiaManager.Views
         private void selectAllButton_Click(object sender, RoutedEventArgs e)
         {
             DataListView.SelectAll();
+        }
+
+        private void saveButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                foreach (DataViewModel item in DataListView.SelectedItems.Cast<DataViewModel>())
+                {
+                    string extension = ".jpg";
+                    string randomName = "User_" + Guid.NewGuid().ToString("N").Substring(6);
+                    SaveBitmapImageToFile(item.Image, randomName + extension, new JpegBitmapEncoder());
+
+                }
+            }
+            catch
+            {
+
+            }
+        
+        }
+
+        public void SaveBitmapImageToFile(BitmapImage bitmapImage, string filePath, BitmapEncoder encoder)
+        {
+            var frame = BitmapFrame.Create(bitmapImage);
+            encoder.Frames.Add(frame);
+            using (FileStream stream = new FileStream(filePath, FileMode.Create))
+            {
+                encoder.Save(stream);
+            }
         }
     }
 }

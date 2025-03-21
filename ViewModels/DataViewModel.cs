@@ -1,5 +1,6 @@
 ﻿using MiaManager.Commands;
 using System.IO;
+using System.Media;
 using System.Windows.Media.Imaging;
 
 namespace MiaManager.ViewModels
@@ -93,19 +94,31 @@ namespace MiaManager.ViewModels
                 Value = string.Join(",", bytes);
                 return;
             }
+            if(type == "audios")
+            {
+                using (MemoryStream ms = new MemoryStream(bytes))
+                {
+                    SoundPlayer player = new SoundPlayer(ms);
+                    player.Play();
+                }
+            }
+            else
+            {
+                if (bytes.Length == 0)
+                    return;
 
-            if (bytes.Length == 0)
-                return ;
+                using var stream = new MemoryStream(bytes);
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.StreamSource = stream;
+                bitmap.EndInit();
+                bitmap.Freeze();
 
-            using var stream = new MemoryStream(bytes);
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.StreamSource = stream;
-            bitmap.EndInit();
-            bitmap.Freeze();
+                Image = bitmap;
+            }
 
-            Image = bitmap;
+       
         }
     }
 }

@@ -51,6 +51,11 @@ namespace MiaManager.Commands.ReportCommand
                         value.Add(res.UserId);
                     else
                         reportResult.OutputParameters.Add(res.ImageName, [res.UserId]);
+
+                    if(!reportResult.Scores.ContainsKey(res.ImageName))
+                        reportResult.Scores.Add(res.ImageName, []);
+
+                    reportResult.Scores[res.ImageName].Add(new(res.UserId, res.Score));
                 }
             }
 

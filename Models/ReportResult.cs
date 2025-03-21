@@ -25,6 +25,8 @@ namespace MiaManager.Models
         public Dictionary<string, List<string>> OutputParameters { get; set; } = [];
         public Dictionary<string, Dictionary<string, int>> ConfusionMatrix = [];
 
+        public Dictionary<string, List<KeyValuePair<string, double>>> Scores { get; set; } = []; 
+
 
         public int TruePositive { get; set; } = 0;
         public int FalsePositive { get; set; } = 0;
@@ -74,7 +76,7 @@ namespace MiaManager.Models
                             if (ConfusionMatrix[realUser].ContainsKey(predictedUser))
                                 ConfusionMatrix[realUser][predictedUser]++;
                             else
-                                ConfusionMatrix[realUser].Add(predictedUser, 0);
+                                ConfusionMatrix[realUser].Add(predictedUser, 1);
                         }
                     }
                   /*  else
@@ -96,7 +98,7 @@ namespace MiaManager.Models
                             if (ConfusionMatrix[realUser].ContainsKey(predictedUser))
                                 ConfusionMatrix[realUser][predictedUser]++;
                             else
-                                ConfusionMatrix[realUser].Add(predictedUser, 0);
+                                ConfusionMatrix[realUser].Add(predictedUser, 1);
                         }
                     }
                   /*  else

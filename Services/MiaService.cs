@@ -41,7 +41,8 @@ namespace MiaManager
         #endregion
 
 
-        public string address = "http://127.0.0.1:50051";
+        public string address = "http://127.0.0.1:50052";
+        //public string address = "http://172.233.24.100:8090";
 
         public GrpcChannel GetChannel()
         {

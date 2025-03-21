@@ -10,6 +10,32 @@
         Height="450" 
         Width="800">
     <Grid>
-        <ScottPlot:WpfPlot x:Name="ConfusionMatrixPlot" Margin="10" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="Precision" Margin="10"/>
+                <TextBlock x:Name="Recall" Margin="10"/>
+                <TextBlock x:Name="F1" Margin="10"/>
+            </StackPanel>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <ScottPlot:WpfPlot Grid.Column="0" Grid.Row="0" x:Name="ConfusionMatrixPlot" Margin="10" />
+                <ScottPlot:WpfPlot Grid.Column="0" Grid.Row="1" x:Name="PrecisionPlot" Margin="10" />
+                <ScottPlot:WpfPlot Grid.Column="1" Grid.Row="0" x:Name="RecallPlot" Margin="10" />
+                <ScottPlot:WpfPlot Grid.Column="1" Grid.Row="1" x:Name="F1Plot" Margin="10" />
+            </Grid>
+
+        </Grid>
+ 
     </Grid>
 </Window>

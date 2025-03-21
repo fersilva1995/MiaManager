@@ -101,6 +101,14 @@ namespace MiaManager.Services
 
                     foreach (Svm element in data.Where(u => added.Contains(u.Id)))
                         elements.Add(element);
+
+                    foreach(Svm element in data)
+                    {
+                        Svm svm = Elements.Where(s => s.Id == element.Id).First();
+                        svm.Name = element.Name;
+                        svm.CreateNegative = element.CreateNegative;
+                        svm.CreateUnknown = element.CreateUnknown;  
+                    }
                 }
                 catch (Exception ex)
                 {
